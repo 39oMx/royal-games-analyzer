@@ -49,7 +49,6 @@
             overflow-x: hidden;
         }
 
-        /* 1. العلامة المائية المكررة المائلة في خلفية الموقع كاملة */
         body::before {
             content: "ROYAL GAMES    ROYAL GAMES    ROYAL GAMES";
             position: fixed;
@@ -160,7 +159,7 @@
             margin-bottom: 16px;
             box-shadow: 0 12px 32px rgba(0,0,0,0.7), inset 0 0 10px rgba(212, 175, 55, 0.03);
             display: none;
-            position: relative; /* ضروري لتثبيت العلامة المائية فوق الفيديو */
+            position: relative;
         }
         
         video {
@@ -169,7 +168,6 @@
             max-height: 500px;
         }
 
-        /* 2. العلامة المائية الثابتة والظاهرة لحماية الحقوق فوق الفيديو */
         .video-watermark {
             position: absolute;
             top: 20px;
@@ -534,6 +532,7 @@
         }
     }
 
+    // تم تعديل الشرط هنا ليعتبر اللقطة تدبيل إذا كانت 0.4 ثانية أو أقل
     function checkDouble() {
         if (currentDifference === 0) {
             alert("إجراء مرفوض: يرجى استعادة السرعة الطبيعية وحساب الفارق الإطاري أولاً.");
@@ -541,7 +540,7 @@
         }
         
         const resultDiv = document.getElementById('analysisResult');
-        if (currentDifference >= 0.4) {
+        if (currentDifference <= 0.4) {
             resultDiv.innerHTML = `<span class="verdict-badge" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #c7d2fe; border: 2px solid #4f46e5;">التقرير النهائي: يوجد تدبيل</span>`;
         } else {
             resultDiv.innerHTML = `<span class="verdict-badge" style="background: linear-gradient(135deg, #14532d 0%, #166534 100%); color: #6ee7b7; border: 2px solid #16a34a;">التقرير النهائي: لا يوجد تدبيل</span>`;

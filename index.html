@@ -479,7 +479,6 @@
         currentDifference = 0;
     }
 
-    // تعديل مخرجات فحص الحرق بناءً على المعطيات المطلوبة
     function checkBurn() {
         if (currentDifference === 0) {
             alert("إجراء مرفوض: يرجى استعادة السرعة الطبيعية وحساب الفارق الإطاري أولاً.");
@@ -494,7 +493,7 @@
         }
     }
 
-    // تعديل مخرجات فحص التدبيل بناءً على المعطيات المطلوبة
+    // هنا تم تعديل منطق التدبيل ليصبح بالعكس تماماً
     function checkDouble() {
         if (currentDifference === 0) {
             alert("إجراء مرفوض: يرجى استعادة السرعة الطبيعية وحساب الفارق الإطاري أولاً.");
@@ -502,7 +501,8 @@
         }
         
         const resultDiv = document.getElementById('analysisResult');
-        if (currentDifference >= 0.4) {
+        // الشرط الجديد: إذا كان الفارق 0.4 أو أقل يعتبر يوجد تدبيل
+        if (currentDifference <= 0.4) {
             resultDiv.innerHTML = `<span class="verdict-badge" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #c7d2fe; border: 2px solid #4f46e5;">التقرير النهائي: يوجد تدبيل</span>`;
         } else {
             resultDiv.innerHTML = `<span class="verdict-badge" style="background: linear-gradient(135deg, #14532d 0%, #166534 100%); color: #6ee7b7; border: 2px solid #16a34a;">التقرير النهائي: لا يوجد تدبيل</span>`;

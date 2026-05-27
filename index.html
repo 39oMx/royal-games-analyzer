@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROYAL GAMES - نظام تحليل وفحص زمن الفيديو</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: radial-gradient(circle at center, #2a1147 0%, #130722 70%, #0b0514 100%);
+            --card-bg: #1c0d30;
+            --card-sub: #2a1545;
+            
+            --border-gold: #d4af37;
+            --border-gold-muted: #8a6f27;
+            --gold-bright: #ffd700;
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            
+            --text-main: #f3eef7;
+            --text-muted: #9f8cb6;
+            
+            --primary: #5b21b6;
+            --primary-hover: #6d28d9;
+            --success: #065f46;
+            --success-hover: #047857;
+            --warning: #b45309;
+            --warning-hover: #d97706;
+            --danger: #991b1b;
+            --danger-hover: #dc2626;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            margin: 0;
+            box-sizing: border-box;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNkNGFmMzciIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4=');
+        }
+
+        .container {
+            max-width: 960px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 24px;
+            border: 2px solid var(--border-gold-muted);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px var(--gold-glow), inset 0 0 20px rgba(212, 175, 55, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .container:hover {
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.9), 0 0 40px rgba(212, 175, 55, 0.5), inset 0 0 25px rgba(212, 175, 55, 0.1);
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 32px;
+            border-bottom: 2px solid var(--border-gold-muted);
+            padding-bottom: 24px;
+            position: relative;
+        }
+        
+        .brand-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background-color: var(--gold-bright);
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px var(--gold-bright);
+        }
+        
+        .brand-header:hover::after {
+            width: 80%;
+        }
+
+        .brand-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+            color: var(--gold-bright);
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .brand-header p {
+            margin: 8px 0 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .upload-container {
+            border: 2px dashed var(--border-gold);
+            padding: 28px;
+            border-radius: 14px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: rgba(10, 5, 18, 0.7);
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-container:hover {
+            border-color: var(--gold-bright);
+            background: rgba(38, 17, 66, 0.5);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+        
+        .upload-container p {
+            margin: 0;
+            color: var(--text-main);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .video-container {
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 3px solid #0d0514;
+            margin-bottom: 16px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7), inset 0 0 10px rgba(212, 175, 55, 0.03);
+            display: none;
+        }
+        video {
+            width: 100%;
+            display: block;
+            max-height: 500px;
+        }
+
+        .remove-video-wrapper {
+            display: none;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+        .btn-remove {
+            background: linear-gradient(135deg, #4c0519 0%, #9f1239 100%);
+            border: 1px solid #f43f5e;
+            color: #fecdd3;
+            font-size: 13px;
+            padding: 8px 24px;
+            border-radius: 6px;
+            width: auto;
+        }
+        .btn-remove:hover {
+            background: linear-gradient(135deg, #9f1239 0%, #e11d48 100%);
+            box-shadow: 0 0 12px rgba(244, 63, 94, 0.3);
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--border-gold);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .controls-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        button {
+            font-family: 'Cairo', sans-serif;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:active {
+            transform: scale(0.96) translateY(1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        button:hover::after {
+            left: 100%;
+        }
+        
+        .btn-slow { background: linear-gradient(135deg, var(--warning) 0%, #a34e08 100%); }
+        .btn-slow:hover { background: linear-gradient(135deg, var(--warning-hover) 0%, var(--warning) 100%); }
+        
+        .btn-start { background: linear-gradient(135deg, var(--primary) 0%, #4c1d95 100%); }
+        .btn-start:hover { background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%); }
+        
+        .btn-end { background: linear-gradient(135deg, var(--danger) 0%, #881818 100%); }
+        .btn-end:hover { background: linear-gradient(135deg, var(--danger-hover) 0%, var(--danger) 100%); }
+        
+        .btn-normal { background: linear-gradient(135deg, var(--success) 0%, #057d5c 100%); }
+        .btn-normal:hover { background: linear-gradient(135deg, var(--success-hover) 0%, var(--success) 100%); }
+
+        .btn-burn { 
+            background: linear-gradient(135deg, #2a0b3d 0%, #1c0d30 100%); 
+            border: 2px solid var(--border-gold); 
+            color: var(--gold-bright);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 10px rgba(212, 175, 55, 0.1);
+        }
+        .btn-burn:hover { 
+            background: linear-gradient(135deg, #3d1554 0%, #2a1147 100%); 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-double { 
+            background: linear-gradient(135deg, #0e122b 0%, #0a0d20 100%); 
+            border: 2px solid var(--border-gold); 
+            color: #cbd5e1;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 10px rgba(212, 175, 55, 0.1);
+        }
+        .btn-double:hover { 
+            background: linear-gradient(135deg, #181d45 0%, #12183a 100%); 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .dashboard {
+            background: rgba(10, 5, 18, 0.9);
+            border-radius: 14px;
+            padding: 24px;
+            border: 1px solid var(--card-sub);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.08);
+            font-size: 15px;
+        }
+        .data-row:last-of-type {
+            border-bottom: none;
+        }
+        .data-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .data-value {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .status-badge {
+            background: var(--card-sub);
+            padding: 3px 14px;
+            border-radius: 7px;
+            font-size: 13px;
+            border: 1px solid var(--border-gold-muted);
+            color: var(--gold-bright) !important;
+        }
+
+        .analysis-output {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--card-sub);
+            border-radius: 10px;
+            border: 2px solid var(--border-gold);
+            display: none;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(212, 175, 55, 0.05);
+            animation: slideInUp 0.4s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .time-highlight {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold-bright);
+            text-shadow: 0 0 8px var(--gold-bright);
+        }
+        .verdict-badge {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.7px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .system-status {
+            margin-top: 20px;
+            font-size: 13px;
+            text-align: center;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="brand-header">
+        <h1>ROYAL GAMES</h1>
+        <p>نظام فرز وتحليل معدل السرعة والأزمنة المستهدفة</p>
+    </div>
+    
+    <div class="upload-container" id="uploadBox">
+        <p>اسحب ملف الفيديو الخاص باللقطة هنا أو اضغط للتصفح</p>
+        <input type="file" id="videoInput" accept="video/*">
+    </div>
+
+    <div class="video-container" id="videoWrapper">
+        <video id="myVideo" controls></video>
+    </div>
+
+    <div class="remove-video-wrapper" id="removeWrapper">
+        <button class="btn-remove" onclick="removeCurrentVideo()">إزالة الفيديو الحالي</button>
+    </div>
+
+    <div class="panel-title">عمليات محاكاة الحركة وإدارة الإطارات</div>
+    <div class="controls-row">
+        <button class="btn-slow" onclick="changeSpeed(0.25)">تبطيء اللقطة</button>
+        <button class="btn-start" onclick="setStartTime()">تحديد نقطة البداية</button>
+        <button class="btn-end" onclick="setEndTime()">تحديد نقطة النهاية</button>
+        <button class="btn-normal" onclick="triggerNormalSpeedManual()">اعادة السرعة الطبيعية</button>
+    </div>
+
+    <div class="panel-title">وحدات فحص ومعايرة أبعاد اللقطة</div>
+    <div class="controls-row">
+        <button class="btn-burn" onclick="checkBurn()">اختبار وجود حرق</button>
+        <button class="btn-double" onclick="checkDouble()">اختبار وجود تدبيل</button>
+    </div>
+
+    <div class="dashboard">
+        <div class="data-row">
+            <span class="data-label">حالة مؤشر البث/السرعة الحالية</span>
+            <span class="data-value status-badge" id="currentSpeed">1.00x</span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">توقيت البداية</span>
+            <span class="data-value" id="lblStartTime">--:--</span>
+        </div>
+        <div class="data-row">
+            <span class="data-label">توقيت النهاية</span>
+            <span class="data-value" id="lblEndTime">--:--</span>
+        </div>
+        
+        <div id="diffContainer" class="analysis-output">
+            <div>الفارق الزمني المرصود بالنطاق: <span id="lblDifference" class="time-highlight">0.00</span> ثانية</div>
+            <div id="analysisResult"></div>
+        </div>
+
+        <div id="rangeStatus" class="system-status">النظام المرجعي: بانتظار استيراد ملف التشغيل لبدء الفحص المعياري.</div>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('myVideo');
+    const videoInput = document.getElementById('videoInput');
+    const videoWrapper = document.getElementById('videoWrapper');
+    const removeWrapper = document.getElementById('removeWrapper');
+    const uploadBox = document.getElementById('uploadBox');
+    
+    let startTime = null;
+    let endTime = null;
+    let currentDifference = 0;
+
+    videoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const fileURL = URL.createObjectURL(file);
+            video.src = fileURL;
+            resetMarkers(); 
+            
+            videoWrapper.style.display = 'block';
+            removeWrapper.style.display = 'flex';
+            uploadBox.style.display = 'none';
+            
+            document.getElementById('rangeStatus').innerHTML = "النظام المرجعي: تم ربط الملف بنجاح، البنية التحتية مهيأة.";
+        }
+    });
+
+    function removeCurrentVideo() {
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+        videoInput.value = ''; 
+        
+        videoWrapper.style.display = 'none';
+        removeWrapper.style.display = 'none';
+        uploadBox.style.display = 'block';
+        
+        resetMarkers();
+        document.getElementById('rangeStatus').innerHTML = "النظام المرجعي: بانتظار استيراد ملف التشغيل لبدء الفحص المعياري.";
+    }
+
+    function changeSpeed(speed) {
+        if (!video.src) return;
+        video.playbackRate = speed;
+        const currentSpeedBadge = document.getElementById('currentSpeed');
+        currentSpeedBadge.innerText = speed.toFixed(2) + 'x';
+    }
+
+    function triggerNormalSpeedManual() {
+        changeSpeed(1);
+        if (startTime !== null && endTime !== null && startTime < endTime) {
+            calculateDifference();
+        }
+    }
+
+    function setStartTime() {
+        if (!video.src) return;
+        startTime = video.currentTime;
+        document.getElementById('lblStartTime').innerHTML = `<span style="color:var(--gold-bright); text-shadow: 0 0 5px var(--gold-bright);">${startTime.toFixed(2)} ثانية</span>`;
+        clearAnalysisUI();
+        checkRangeValidity();
+    }
+
+    function setEndTime() {
+        if (!video.src) return;
+        endTime = video.currentTime;
+        document.getElementById('lblEndTime').innerHTML = `<span style="color:#ef4444; text-shadow: 0 0 5px #ef4444;">${endTime.toFixed(2)} ثانية</span>`;
+        clearAnalysisUI();
+        checkRangeValidity();
+    }
+
+    function checkRangeValidity() {
+        const status = document.getElementById('rangeStatus');
+        if (startTime !== null && endTime !== null) {
+            if (startTime >= endTime) {
+                status.innerHTML = "<span style='color:#ef4444; font-weight:600;'>خطأ مرجعي: تعذر تثبيت النطاق؛ قيمة البداية تتجاوز أو تساوي النهاية.</span>";
+            } else {
+                status.innerHTML = "<span style='color:var(--gold-bright); font-weight:600;'>الحالة الأمنية: تم حصر وقفل النطاق المستهدف بنجاح.</span>";
+            }
+        }
+    }
+
+    function calculateDifference() {
+        currentDifference = endTime - startTime;
+        document.getElementById('lblDifference').innerText = currentDifference.toFixed(2);
+        
+        const container = document.getElementById('diffContainer');
+        container.style.display = 'block'; 
+    }
+
+    function clearAnalysisUI() {
+        document.getElementById('diffContainer').style.display = 'none';
+        document.getElementById('analysisResult').innerHTML = '';
+        currentDifference = 0;
+    }
+
+    // تعديل مخرجات فحص الحرق بناءً على المعطيات المطلوبة
+    function checkBurn() {
+        if (currentDifference === 0) {
+            alert("إجراء مرفوض: يرجى استعادة السرعة الطبيعية وحساب الفارق الإطاري أولاً.");
+            return;
+        }
+        
+        const resultDiv = document.getElementById('analysisResult');
+        if (currentDifference >= 0.8) {
+            resultDiv.innerHTML = `<span class="verdict-badge" style="background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%); color: #fca5a5; border: 2px solid #dc2626;">التقرير النهائي: يوجد حرق</span>`;
+        } else {
+            resultDiv.innerHTML = `<span class="verdict-badge" style="background: linear-gradient(135deg, #14532d 0%, #166534 100%); color: #6ee7b7; border: 2px solid #16a34a;">التقرير النهائي: لا يوجد حرق</span>`;
+        }
+    }
+
+    // تعديل مخرجات فحص التدبيل بناءً على المعطيات المطلوبة
+    function checkDouble() {
+        if (currentDifference === 0) {
+            alert("إجراء مرفوض: يرجى استعادة السرعة الطبيعية وحساب الفارق الإطاري أولاً.");
+            return;
+        }
+        
+        const resultDiv = document.getElementById('analysisResult');
+        if (currentDifference >= 0.4) {
+            resultDiv.innerHTML = `<span class="verdict-badge" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #c7d2fe; border: 2px solid #4f46e5;">التقرير النهائي: يوجد تدبيل</span>`;
+        } else {
+            resultDiv.innerHTML = `<span class="verdict-badge" style="background: linear-gradient(135deg, #14532d 0%, #166534 100%); color: #6ee7b7; border: 2px solid #16a34a;">التقرير النهائي: لا يوجد تدبيل</span>`;
+        }
+    }
+
+    function resetMarkers() {
+        startTime = null;
+        endTime = null;
+        document.getElementById('lblStartTime').innerText = '--:--';
+        document.getElementById('lblEndTime').innerText = '--:--';
+        clearAnalysisUI();
+        const currentSpeedBadge = document.getElementById('currentSpeed');
+        currentSpeedBadge.innerText = '1.00x';
+        if (video.src) video.playbackRate = 1;
+    }
+
+    video.addEventListener('timeupdate', function() {
+        if (startTime !== null && endTime !== null && startTime < endTime) {
+            if (video.currentTime >= startTime && video.currentTime <= endTime) {
+                if (video.playbackRate !== 1) {
+                    changeSpeed(1);         
+                    calculateDifference(); 
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
